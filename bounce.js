@@ -5,7 +5,7 @@ let platform_image, platform;
 let ball_image, ball;
 let bricks, banana_image, berries_image, orange_image, peach_image;
 let types = ["peach", "orange", "berries", "banana"];
-let winning_score = 36;
+let winning_score = 48;
 
 var added_speed = 0, game_state = "start", high_score = 0, score = 0, new_high = false;
 
@@ -25,10 +25,10 @@ function preload() {
 
 class Platform {
   constructor() {
-    this.width = 150;
-    this.height = 30;
+    this.width = 160;
+    this.height = 40;
     this.location = createVector((WIDTH / 2) - (this.width / 2), HEIGHT - 50);
-    this.s = 4;
+    this.s = 5 ;
     this.speed = {
       right: createVector(this.s, 0), 
       left: createVector(this.s * -1, 0)
