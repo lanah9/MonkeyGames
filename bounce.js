@@ -7,7 +7,21 @@ let bricks, banana_image, berries_image, orange_image, peach_image;
 let types = ["peach", "orange", "berries", "banana"];
 let winning_score = 48;
 
+var name;
 var added_speed = 0, game_state = "start", high_score = 0, score = 0, new_high = false;
+var x_variability = 0;
+var leaderboard = {};
+var sorted_leaderboard;
+
+function write_to_leaderboard() {
+  const fs = require('fs')
+          
+  for (let i = 0; i < sorted_leaderboard.length; i++){
+    fs.writeFile('leaderboard.txt', sorted_leaderboard[i][0] + "," + sorted_leaderboard[i][1], (err) => {
+      if (err) throw err;
+  })
+  } 
+}
 
 function preload() {
   bg_image = loadImage("images/large_images/bg.png");
@@ -15,25 +29,58 @@ function preload() {
   win_image = loadImage("images/large gifs/dance gif.gif");
   lose_image = loadImage("images/large gifs/disapointed monkey.gif");
   platform_image = loadImage("images/large_images/platform.png");
-  ball_image = loadImage("images/fruit/peachfruit.png");
+  ball_image = loadImage("images/fruit/orangefruit.png");
   banana_image = loadImage("images/fruit/bananabasket.png");
   berries_image = loadImage("images/fruit/berriesbasket.png");
   orange_image = loadImage("images/fruit/orangebasket.png");
   peach_image = loadImage("images/fruit/peachbasket.png");
   mc_font = loadFont("Minecraft.ttf");
+
+
+
+  // const fs = require("fs");
+  // const readline = require("readline");
+
+  // const input_path = "leaderboard.txt";
+  // // const output_path = "output.txt";
+
+  // const inputStream = fs.createReadStream(input_path);
+  // // const outputStream = fs.createWriteStream(output_path, { encoding: "utf8" });
+  // var lineReader = readline.createInterface({
+  //   input: inputStream,
+  //   terminal: false,
+  // });
+  // lineReader.on("line", function (line) {
+  //   // outputStream.write(line + "\n");
+  //   var nameScore = line.split(",");
+  //   leaderboard[nameScore[0]] = nameScore[1];
+  // });
+
+    var request = new XMLHttpRequest();
+    request.open("GET", "leaderboard.txt", false);
+    request.send(null);
+    var returnValue = request.responseText;
+
+    var lines = returnValue.split("\r\n");
+
+    for(var i = 0; i < lines.length; i++){
+      var nameScore = lines[i].split(",");
+      leaderboard[nameScore[0]] = nameScore[1];
+    }
 }
 
 class Platform {
   constructor() {
-    this.width = 160;
-    this.height = 40;
-    this.location = createVector((WIDTH / 2) - (this.width / 2), HEIGHT - 50);
-    this.s = 5 ;
+    this.width = 200;
+    this.height = 50;
+    this.location = createVector((WIDTH / 2) - (this.width / 2) + x_variability, HEIGHT - 50);
+    this.s = 7;
     this.speed = {
       right: createVector(this.s, 0), 
       left: createVector(this.s * -1, 0)
     };
     platform_image.resize(this.width, this.height);
+    x_variability = Math.floor(Math.random() * 500) - 250;
   }
 
   draw() {
@@ -54,8 +101,8 @@ class Platform {
 
 class Ball {
   constructor(platform) {
-    this.radius = 15;
-    this.location = createVector(platform.location.x + (platform.width / 2), (platform.location.y - this.radius));
+    this.radius = 20;
+    this.location = createVector(platform.location.x + (platform.width / 2) + x_variability, (platform.location.y - this.radius));
     this.s = 3;
     this.velocity = createVector(this.s, this.s * -1);
     this.platform = platform;
@@ -151,6 +198,8 @@ function setup() {
   platform = new Platform();
   ball = new Ball(platform);
   bricks = createBricks();
+
+  last_hit = millis() - 10000;
 }
 
 function draw() {
@@ -165,18 +214,22 @@ function draw() {
     }
     platform.draw();
 
+    current_time = millis();
+
     for (let i = bricks.length - 1; i >= 0; i--) {
       const brick = bricks[i];
-      if(brick.hit(ball)) {
+      if(brick.hit(ball)  && current_time - last_hit > 10) {
         ball.velocity['y'] *= -1;
         brick.life -= 1;
         brick.type += 1;
+        last_hit = current_time;
       }
       if (brick.life == 0) {
         ball.velocity['y'] *= -1;
         bricks.splice(i, 1);
         score += brick.points;
         added_speed += 0.01;
+        
 
         platform.speed = {
           right: createVector(platform.s += added_speed, 0),
@@ -196,6 +249,7 @@ function draw() {
       if (score > high_score) {
         high_score = score;
         new_high = true;
+        leaderboard[name] = high_score;
       }
 
       platform = new Platform();
@@ -210,6 +264,7 @@ function draw() {
       if (score > high_score) {
         high_score = score;
         new_high = true;
+        leaderboard[name] = high_score;
       }
        
       platform = new Platform();
@@ -234,10 +289,22 @@ function draw() {
       text(`BOUNCE GAME`, 230, HEIGHT - 200);
       text(`PRESS SPACE TO PLAY!`, 50, HEIGHT - 100);
       if (keyIsDown(32)) {
-        game_state = "play"; 
+        game_state = "play"; //enter_name
       }
     }
+  else if(game_state == "enter_name") {
+    name = prompt("Please enter your name", "");
+    if(name != null) {
+      console.log(leaderboard);
+      if(name in leaderboard) {
+        high_score = leaderboard[name];
+      }
+      
+      game_state = "play";
+    }
+  }
   else if(game_state == "win") {
+    // write_to_leaderboard();
     background(bg_image);
     image(win_image, 360, 50);
     textSize(50);
@@ -263,11 +330,31 @@ function draw() {
     if(new_high) {
       fill(255, 0, 0);
       text(`*NEW* High Score: ${high_score}`, 50, HEIGHT - 30);
+      // write_to_leaderboard();
     }
     else{
       text(`High Score: ${high_score}`, 50, HEIGHT - 30);
     }
+
+    sorted_leaderboard = Object.keys(leaderboard).map(function(key) {
+      return [key, leaderboard[key]];
+    });
     
+    sorted_leaderboard.sort(function(first, second) {
+      return second[1] - first[1];
+    });
+
+    // fill(0);
+    // text(`Leaderboard:`, 25, 40);
+    // for(let i = 1; i < 6; i++){
+    //   textSize(30);
+    //   text(i + `. ${sorted_leaderboard[i - 1][0]}`, 15, (50 * i) + 30);
+    //   text(`${sorted_leaderboard[i - 1][1]}`, 300, (50 * i) + 30);
+    // }
+
+    // textSize(50);
+    
+        
     if (keyIsDown(32)) {
       game_state = "play"; 
       new_high = false;
