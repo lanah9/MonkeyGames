@@ -71,7 +71,7 @@ function preload() {
 
 class Platform {
   constructor() {
-    this.width = 1000;
+    this.width = 200;
     this.height = 50;
     this.location = createVector((WIDTH / 2) - (this.width / 2) + x_variability, HEIGHT - 50);
     this.s = 7;
