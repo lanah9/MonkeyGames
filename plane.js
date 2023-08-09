@@ -17,7 +17,7 @@ function preload() {
   banana_image = loadImage("images/blown up images/cropped/blown up banana.png");
   banana_image_icon = loadImage("images/blown up images/cropped/blown up banana.png");
   obstacle_image = loadImage("images/blown up images/cropped/stick.png");
-  lose_image = loadImage("images/large gifs/disapointed monkey.gif");
+  lose_image = loadImage("images/large gifs/disapointed monkey transparent gif.gif");
   mc_font = loadFont("Minecraft.ttf");
 }
 

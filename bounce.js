@@ -27,7 +27,7 @@ function preload() {
   bg_image = loadImage("images/large_images/bg.png");
   bg_image.resize(WIDTH, HEIGHT);
   win_image = loadImage("images/large gifs/dance gif.gif");
-  lose_image = loadImage("images/large gifs/disapointed monkey.gif");
+  lose_image = loadImage("images/large gifs/disapointed monkey transparent gif.gif");
   platform_image = loadImage("images/large_images/platform.png");
   ball_image = loadImage("images/blown up images/blown up ball.png");
   banana_image = loadImage("images/fruit/bananabasket.png");
