@@ -12,8 +12,8 @@ var body_array = [];
 function preload() {
   bg_image = loadImage("images/large_images/bg.png");
   bg_image.resize(WIDTH, HEIGHT);
-  player_image = loadImage("images/blown up images/cropped/blown up sprite.png");
-  player_image_flash = loadImage("images/monkey plane game/cropped/plane_flash.png");
+  player_image = loadImage("images/large_images/big fam monkey.png");
+  player_image_flash = loadImage("images/large_images/small fam monkey.png");
   heart_image = loadImage("images/blown up images/blown up heart.png");
   banana_image = loadImage("images/blown up images/cropped/blown up banana.png");
   banana_image_icon = loadImage("images/blown up images/cropped/blown up banana.png");
@@ -23,59 +23,71 @@ function preload() {
 }
 
 class Segment {
-    constructor(first_one, player) {
+    constructor(first_one) {
         if(first_one){
-            this.previous_x = player.location.x;
-            this.previous_y = player.location.y;
-            this.previous = player;
+            ;
         }
         else{
-            this.previous_x = body_array[body_array.length - 1].location.x;
-            this.previous_y = body_array[body_array.length - 1].location.y;
-            this.previous = body_array[body_array.length - 1];
+            ;
         }
         this.location = createVector(this.previous_x - 250, this.previous_y - 250);
         this.position = body_array.length;
         this.direction = direction;
+        this.height = 50;
+        this.width = 50;
+        player_image_flash.resize(this.width, this.height);
     }
     draw(player){
-        // if(this.position > 1){
-        //     // this.location.x = body_array[this.position - 1].location.x - 50;
-        //     // this.location.y = body_array[this.position - 1].location.y - 50;
-        //     if(body_array[this.position - 2].direction == "down"){
-        //         image(player_image_flash, body_array[this.position - 2].location.x, body_array[this.position - 2].location.y - 50);
-        //     }
-        //     else if(body_array[this.position - 2].direction == "up"){
-        //         image(player_image_flash, body_array[this.position - 2].location.x, body_array[this.position - 2].location.y + 50);
-        //     }
-        //     else if(body_array[this.position - 2].direction == "right"){
-        //         image(player_image_flash, body_array[this.position - 2].location.x - 50, body_array[this.position - 2].location.y);
-        //     }
-        //     else{
-        //         image(player_image_flash, body_array[this.position - 2].location.x + 50, body_array[this.position - 2].location.y);
-        //     }
-        //     console.log(body_array);
-        // }
-        // else{
+        if(this.position > 0){
+            if(body_array[this.position - 1].direction == "down"){
+                this.location.x = body_array[this.position - 1].location.x;
+                this.location.y = body_array[this.position - 1].location.y - 50;
+            }
+            else if(body_array[this.position - 1].direction == "up"){
+                this.location.x = body_array[this.position - 1].location.x;
+                this.location.y = body_array[this.position - 1].location.y + 50;
+            }
+            else if(body_array[this.position - 1].direction == "right"){
+                this.location.x = body_array[this.position - 1].location.x - 50;
+                this.location.y = body_array[this.position - 1].location.y;
+            }
+            else{
+                this.location.x = body_array[this.position - 1].location.x + 50;
+                this.location.y = body_array[this.position - 1].location.y;
+            }
+        }
+        else{
             if(direction == "down"){
-                image(player_image_flash, player.location.x, player.location.y - (this.position * 50));
+                this.location.x = player.location.x;
+                this.location.y = player.location.y - 75;
                 this.direction = "down";
             }
             else if(direction == "up"){
-                image(player_image_flash, player.location.x, player.location.y + (this.position * 50));
+                this.location.x = player.location.x;
+                this.location.y = player.location.y + 75;
                 this.direction = "up";
             }
             else if(direction == "right"){
-                image(player_image_flash, player.location.x - (this.position * 50), player.location.y);
+                this.location.x = player.location.x - 75;
+                this.location.y = player.location.y;
                 this.direction = "right";
             }
             else{
-                image(player_image_flash, player.location.x + (this.position * 50), player.location.y);
+                this.location.x = player.location.x + 75;
+                this.location.y = player.location.y;
                 this.direction = "left";
             }
-        // }
-        
+        }
+        image(player_image_flash, this.location.x, this.location.y);
     }
+    hit(player) {
+        if(player.location.y - player.height <= this.location.y + this.height &&
+          player.location.y + player.height >= this.location.y &&
+          player.location.x + player.width >= this.location.x &&
+          player.location.x - player.width <= this.location.x + this.width) {
+            return true;
+          }
+      }
 }
 
 class Player {
@@ -96,16 +108,16 @@ class Player {
         image(player_image_flash, this.location.x, this.location.y);
       }
       if(this.location.x < 0) {
-        this.location.x = 0;
+        player.alive = false;
       }
       if(this.location.x > WIDTH - this.width) {
-        this.location.x = WIDTH - this.width;
+        player.alive = false;
       }
       if(this.location.y < 0) {
-        this.location.y = 0;
+        player.alive = false;
       }
       if(this.location.y > HEIGHT - this.height) {
-        this.location.y = HEIGHT - this.height;
+        player.alive = false;
       }
     }
   
@@ -205,8 +217,12 @@ function draw() {
         }
     }
 
+
     for(let i = 0; i < body_array.length; i++){
         body_array[i].draw(player);
+        if(body_array[i].hit(player) && i >2){
+            player.alive = false;
+        }
     }
 
     current_time = millis();
@@ -230,6 +246,7 @@ function draw() {
       body_array.splice(0, body_array.length);
       added_speed = 0;
       banana_cooldown = 1500;
+      direction = "right";
     }
   }
   else if(game_state == "start") {
