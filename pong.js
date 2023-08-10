@@ -16,6 +16,8 @@ function preload() {
   bg_image = loadImage("images/pong assets/bg.png");
   bg_image.resize(WIDTH, HEIGHT);
   win_image = loadImage("images/large gifs/dance gif.gif");
+  red_win = loadImage("images/large gifs/red win gif.gif")
+  blue_win = loadImage("images/large gifs/blue win gif.gif")
   lose_image = loadImage("images/large gifs/disapointed monkey transparent gif.gif");
   platform_image_l = loadImage("images/pong assets/bigLeft.png");
   platform_image_r = loadImage("images/pong assets/bigRight.png");
@@ -195,17 +197,19 @@ function draw() {
   else if(game_state == "win") {
     // write_to_leaderboard();
     background(bg_image);
-    image(win_image, 400, 50);
+    
     textSize(50);
     textFont(mc_font);
     fill(255);
     if(l_score > r_score){
         fill(0, 0, 255);
         text(`LEFT WINS!`, 360, HEIGHT - 180);
+        image(blue_win, 375, 25);
     }
     else{
         fill(255, 0, 0);
         text(`RIGHT WINS!`, 360, HEIGHT - 180);
+        image(red_win, 375, 25);
     }
     fill(255);
     text(`PRESS SPACE TO PLAY AGAIN.`, 110, HEIGHT - 120);

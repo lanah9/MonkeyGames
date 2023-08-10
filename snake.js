@@ -18,7 +18,7 @@ function preload() {
   banana_image = loadImage("images/blown up images/cropped/blown up banana.png");
   banana_image_icon = loadImage("images/blown up images/cropped/blown up banana.png");
   obstacle_image = loadImage("images/blown up images/cropped/stick.png");
-  lose_image = loadImage("images/large gifs/disapointed monkey transparent gif.gif");
+  lose_image = loadImage("images/large gifs/big cry gif.gif");
   mc_font = loadFont("Minecraft.ttf");
 }
 
@@ -262,7 +262,7 @@ function draw() {
   }
   else if(game_state == "lose") {
     background(bg_image);
-    image(lose_image, 400, 50);
+    image(lose_image, 375, 25);
     textSize(50);
     textFont(mc_font);
     fill(0);
