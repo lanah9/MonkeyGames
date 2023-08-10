@@ -10,7 +10,7 @@ var direction = "right", banana;
 var body_array = [];
 
 function preload() {
-  bg_image = loadImage("images/large_images/bg.png");
+  bg_image = loadImage("images/large_images/checkerboard_bg.jpg");
   bg_image.resize(WIDTH, HEIGHT);
   player_image = loadImage("images/large_images/big fam monkey.png");
   player_image_flash = loadImage("images/large_images/small fam monkey.png");
